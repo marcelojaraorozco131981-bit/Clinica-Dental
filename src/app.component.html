@@ -1,0 +1,181 @@
+@if (userRole() === 'admin') {
+<div class="min-h-screen flex flex-col">
+  <!-- Header -->
+  <header class="bg-white shadow-md w-full p-4 flex items-center justify-between print:hidden">
+    <div class="flex items-center">
+      <svg class="w-8 h-8 text-cyan-500 mr-3" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+        <path stroke-linecap="round" stroke-linejoin="round" d="M6.75 3v2.25M17.25 3v2.25M3 18.75V7.5a2.25 2.25 0 0 1 2.25-2.25h13.5A2.25 2.25 0 0 1 21 7.5v11.25m-18 0A2.25 2.25 0 0 0 5.25 21h13.5A2.25 2.25 0 0 0 21 18.75m-18 0h18M12 12.75h.008v.008H12v-.008Z" />
+      </svg>
+      <h1 class="text-2xl font-bold text-slate-800">Gestor de Citas Dentales (Admin)</h1>
+    </div>
+    <div class="flex items-center">
+      <span class="text-sm text-slate-600 mr-4 hidden sm:block">
+        Bienvenido, <span class="font-semibold">{{ authService.currentUser()?.email }}</span>
+      </span>
+      <button (click)="logout()" class="flex items-center px-4 py-2 bg-red-500 text-white rounded-md hover:bg-red-600 transition-colors text-sm font-bold">
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-5 h-5 mr-2">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 9V5.25A2.25 2.25 0 0 0 13.5 3h-6a2.25 2.25 0 0 0-2.25 2.25v13.5A2.25 2.25 0 0 0 7.5 21h6a2.25 2.25 0 0 0 2.25-2.25V15m3 0 3-3m0 0-3-3m3 3H9" />
+        </svg>
+        Cerrar Sesión
+      </button>
+    </div>
+  </header>
+
+  <!-- Main Content -->
+  <main class="flex-grow container mx-auto p-4 md:p-6 lg:p-8 grid grid-cols-1 lg:grid-cols-3 gap-8 print:block print:p-0">
+    
+    <!-- Left Column: Calendar -->
+    <div class="lg:col-span-2 bg-white p-6 rounded-2xl shadow-lg print:hidden">
+      <app-calendar 
+        [appointments]="dataService.appointments()"
+        (dateSelected)="onDateSelected($event)">
+      </app-calendar>
+    </div>
+
+    <!-- Right Column: Details & Forms -->
+    <div class="lg:col-span-1 bg-white p-6 rounded-2xl shadow-lg flex flex-col print:hidden">
+      <div class="flex-grow">
+        <h2 class="text-xl font-bold text-slate-700 border-b pb-3 mb-4">
+          Citas para: <span class="text-cyan-600">{{ formatDate(selectedDate()) }}</span>
+        </h2>
+        
+        <app-appointment-list 
+          [appointments]="appointmentsForSelectedDay()"
+          (deleteAppointment)="onDeleteAppointment($event)">
+        </app-appointment-list>
+      </div>
+
+      <!-- Action Buttons -->
+      <div class="mt-6 border-t pt-6 space-y-3">
+        <button (click)="toggleAppointmentForm()" class="w-full bg-cyan-500 hover:bg-cyan-600 text-white font-bold py-3 px-4 rounded-lg transition-colors duration-300 flex items-center justify-center">
+          <svg class="w-5 h-5 mr-2" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M6.75 3v2.25M17.25 3v2.25M3 18.75V7.5a2.25 2.25 0 0 1 2.25-2.25h13.5A2.25 2.25 0 0 1 21 7.5v11.25m-18 0A2.25 2.25 0 0 0 5.25 21h13.5A2.25 2.25 0 0 0 21 18.75m-18 0h18M12 12.75h.008v.008H12v-.008Z" />
+          </svg>
+          Programar Cita
+        </button>
+        <button (click)="togglePatientForm()" class="w-full bg-slate-200 hover:bg-slate-300 text-slate-800 font-bold py-3 px-4 rounded-lg transition-colors duration-300 flex items-center justify-center">
+           <svg class="w-5 h-5 mr-2" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+             <path stroke-linecap="round" stroke-linejoin="round" d="M18 7.5v3m0 0v3m0-3h3m-3 0h-3m-2.25-4.125a3.375 3.375 0 1 1-6.75 0 3.375 3.375 0 0 1 6.75 0ZM3 19.235v-.11a6.375 6.375 0 0 1 12.75 0v.109A12.318 12.318 0 0 1 9.374 21c-2.331 0-4.512-.645-6.374-1.766Z" />
+           </svg>
+          Añadir Paciente
+        </button>
+        <button (click)="toggleDoctorForm()" class="w-full bg-slate-200 hover:bg-slate-300 text-slate-800 font-bold py-3 px-4 rounded-lg transition-colors duration-300 flex items-center justify-center">
+           <svg class="w-5 h-5 mr-2" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 6a3.75 3.75 0 1 1-7.5 0 3.75 3.75 0 0 1 7.5 0ZM4.501 20.118a7.5 7.5 0 0 1 14.998 0A17.933 17.933 0 0 1 12 21.75c-2.676 0-5.216-.584-7.499-1.632Z" />
+          </svg>
+          Añadir Doctor
+        </button>
+         <button (click)="toggleReportsModal()" class="w-full bg-teal-500 hover:bg-teal-600 text-white font-bold py-3 px-4 rounded-lg transition-colors duration-300 flex items-center justify-center">
+          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-5 h-5 mr-2">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M3.75 12h16.5m-16.5 3.75h16.5M3.75 19.5h16.5M5.625 4.5h12.75a1.875 1.875 0 0 1 0 3.75H5.625a1.875 1.875 0 0 1 0-3.75Z" />
+          </svg>
+          Generar Reporte
+        </button>
+      </div>
+    </div>
+  </main>
+</div>
+} @else if (userRole() === 'patient') {
+<div class="min-h-screen flex flex-col">
+  <!-- Patient Header -->
+  <header class="bg-white shadow-md w-full p-4 flex items-center justify-between">
+    <div class="flex items-center">
+       <svg class="w-8 h-8 text-cyan-500 mr-3" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+        <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 6a3.75 3.75 0 1 1-7.5 0 3.75 3.75 0 0 1 7.5 0ZM4.501 20.118a7.5 7.5 0 0 1 14.998 0A17.933 17.933 0 0 1 12 21.75c-2.676 0-5.216-.584-7.499-1.632Z" />
+      </svg>
+      <h1 class="text-2xl font-bold text-slate-800">Portal del Paciente</h1>
+    </div>
+    <div class="flex items-center">
+      <span class="text-sm text-slate-600 mr-4 hidden sm:block">
+        Bienvenido, <span class="font-semibold">{{ authService.currentUser()?.email }}</span>
+      </span>
+      <button (click)="logout()" class="flex items-center px-4 py-2 bg-red-500 text-white rounded-md hover:bg-red-600 transition-colors text-sm font-bold">
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-5 h-5 mr-2">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 9V5.25A2.25 2.25 0 0 0 13.5 3h-6a2.25 2.25 0 0 0-2.25 2.25v13.5A2.25 2.25 0 0 0 7.5 21h6a2.25 2.25 0 0 0 2.25-2.25V15m3 0 3-3m0 0-3-3m3 3H9" />
+        </svg>
+        Cerrar Sesión
+      </button>
+    </div>
+  </header>
+
+  <!-- Patient Main Content -->
+  <main class="flex-grow container mx-auto p-4 md:p-6 lg:p-8 grid grid-cols-1 lg:grid-cols-3 gap-8">
+      <!-- Left Column: Calendar -->
+      <div class="lg:col-span-2 bg-white p-6 rounded-2xl shadow-lg">
+        <app-calendar 
+          [appointments]="patientAppointments()"
+          (dateSelected)="onDateSelected($event)">
+        </app-calendar>
+      </div>
+
+      <!-- Right Column: Details -->
+      <div class="lg:col-span-1 bg-white p-6 rounded-2xl shadow-lg flex flex-col">
+        <div class="flex-grow">
+          <h2 class="text-xl font-bold text-slate-700 border-b pb-3 mb-4">
+            Citas para: <span class="text-cyan-600">{{ formatDate(selectedDate()) }}</span>
+          </h2>
+          
+          <app-appointment-list 
+            [appointments]="appointmentsForSelectedDay()"
+            (deleteAppointment)="onDeleteAppointment($event)">
+          </app-appointment-list>
+        </div>
+        
+        <div class="mt-6 border-t pt-6">
+          <button (click)="toggleAppointmentForm()" class="w-full bg-cyan-500 hover:bg-cyan-600 text-white font-bold py-3 px-4 rounded-lg transition-colors duration-300 flex items-center justify-center">
+            <svg class="w-5 h-5 mr-2" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M6.75 3v2.25M17.25 3v2.25M3 18.75V7.5a2.25 2.25 0 0 1 2.25-2.25h13.5A2.25 2.25 0 0 1 21 7.5v11.25m-18 0A2.25 2.25 0 0 0 5.25 21h13.5A2.25 2.25 0 0 0 21 18.75m-18 0h18M12 12.75h.008v.008H12v-.008Z" />
+            </svg>
+            Programar Nueva Cita
+          </button>
+        </div>
+      </div>
+  </main>
+</div>
+} @else {
+  <app-login></app-login>
+}
+
+
+<!-- Modals for Forms -->
+@if (showAppointmentForm()) {
+  <div class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50" (click)="toggleAppointmentForm()">
+    <div class="bg-white rounded-2xl shadow-2xl p-8 w-full max-w-md" (click)="$event.stopPropagation()">
+      <app-appointment-form 
+        [patients]="dataService.patients()" 
+        [doctors]="dataService.doctors()"
+        [selectedDate]="selectedDate()"
+        [patientId]="authService.currentUser()?.role === 'patient' ? authService.currentUser()?.patientId : undefined"
+        (appointmentAdded)="onAddAppointment($event)"
+        (closeModal)="toggleAppointmentForm()">
+      </app-appointment-form>
+    </div>
+  </div>
+}
+
+@if (showPatientForm()) {
+  <div class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50" (click)="togglePatientForm()">
+    <div class="bg-white rounded-2xl shadow-2xl p-8 w-full max-w-md" (click)="$event.stopPropagation()">
+      <app-patient-form (patientAdded)="onAddPatient($event)" (closeModal)="togglePatientForm()"></app-patient-form>
+    </div>
+  </div>
+}
+
+@if (showDoctorForm()) {
+  <div class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50" (click)="toggleDoctorForm()">
+    <div class="bg-white rounded-2xl shadow-2xl p-8 w-full max-w-md" (click)="$event.stopPropagation()">
+      <app-doctor-form (doctorAdded)="onAddDoctor($event)" (closeModal)="toggleDoctorForm()"></app-doctor-form>
+    </div>
+  </div>
+}
+
+@if (showReportsModal()) {
+  <div class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50" (click)="toggleReportsModal()">
+    <div class="bg-white rounded-2xl shadow-2xl p-8 w-full max-w-4xl max-h-[90vh] flex flex-col" (click)="$event.stopPropagation()">
+      <app-reports
+        [appointments]="dataService.appointments()"
+        (closeModal)="toggleReportsModal()">
+      </app-reports>
+    </div>
+  </div>
+}

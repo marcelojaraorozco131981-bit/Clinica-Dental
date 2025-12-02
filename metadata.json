@@ -1,0 +1,5 @@
+{
+  "name": "Calendario de Clínica Dental",
+  "description": "Una aplicación para gestionar citas y pacientes de una clínica dental. Permite visualizar un calendario mensual, añadir nuevos pacientes y programar citas para ellos en días específicos.",
+  "requestFramePermissions": []
+}

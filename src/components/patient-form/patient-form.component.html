@@ -1,0 +1,39 @@
+
+<form [formGroup]="patientForm" (ngSubmit)="onSubmit()" class="space-y-6">
+  <h3 class="text-2xl font-bold text-slate-800 mb-4">Añadir Nuevo Paciente</h3>
+
+  <div>
+    <label for="name" class="block text-sm font-medium text-slate-700">Nombre Completo</label>
+    <input type="text" id="name" formControlName="name" class="mt-1 block w-full px-3 py-2 bg-white border border-slate-300 rounded-md shadow-sm focus:outline-none focus:ring-cyan-500 focus:border-cyan-500 sm:text-sm">
+    @if (patientForm.get('name')?.invalid && patientForm.get('name')?.touched) {
+      <p class="text-red-500 text-xs mt-1">El nombre es requerido.</p>
+    }
+  </div>
+
+  <div>
+    <label for="phone" class="block text-sm font-medium text-slate-700">Teléfono</label>
+    <input type="tel" id="phone" formControlName="phone" class="mt-1 block w-full px-3 py-2 bg-white border border-slate-300 rounded-md shadow-sm focus:outline-none focus:ring-cyan-500 focus:border-cyan-500 sm:text-sm">
+     @if (patientForm.get('phone')?.invalid && patientForm.get('phone')?.touched) {
+      <p class="text-red-500 text-xs mt-1">El teléfono es requerido.</p>
+    }
+  </div>
+
+  <div>
+    <label for="email" class="block text-sm font-medium text-slate-700">Correo Electrónico</label>
+    <input type="email" id="email" formControlName="email" class="mt-1 block w-full px-3 py-2 bg-white border border-slate-300 rounded-md shadow-sm focus:outline-none focus:ring-cyan-500 focus:border-cyan-500 sm:text-sm">
+     @if (patientForm.get('email')?.invalid && patientForm.get('email')?.touched) {
+      <p class="text-red-500 text-xs mt-1">
+          @if(patientForm.get('email')?.hasError('required')) {
+            El correo es requerido.
+          } @else {
+            El formato del correo no es válido.
+          }
+      </p>
+    }
+  </div>
+  
+  <div class="flex justify-end space-x-3 pt-4">
+    <button type="button" (click)="closeModal.emit()" class="px-4 py-2 bg-slate-200 text-slate-800 rounded-md hover:bg-slate-300 transition-colors">Cancelar</button>
+    <button type="submit" [disabled]="patientForm.invalid" class="px-4 py-2 bg-cyan-500 text-white rounded-md hover:bg-cyan-600 transition-colors disabled:bg-slate-300 disabled:cursor-not-allowed">Guardar Paciente</button>
+  </div>
+</form>

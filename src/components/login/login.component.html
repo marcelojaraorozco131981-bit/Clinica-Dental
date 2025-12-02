@@ -1,0 +1,59 @@
+<div class="min-h-screen bg-slate-100 flex flex-col justify-center items-center p-4">
+  <div class="w-full max-w-md">
+    
+    <div class="bg-white shadow-2xl rounded-2xl p-8 space-y-6">
+      <div class="text-center">
+        <div class="flex items-center justify-center mb-4">
+            <svg class="w-10 h-10 text-cyan-500 mr-3" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M6.75 3v2.25M17.25 3v2.25M3 18.75V7.5a2.25 2.25 0 0 1 2.25-2.25h13.5A2.25 2.25 0 0 1 21 7.5v11.25m-18 0A2.25 2.25 0 0 0 5.25 21h13.5A2.25 2.25 0 0 0 21 18.75m-18 0h18M12 12.75h.008v.008H12v-.008Z" />
+            </svg>
+            <h1 class="text-3xl font-bold text-slate-800">DentalGes</h1>
+        </div>
+        <p class="text-slate-500">Inicia sesión para gestionar tus citas</p>
+      </div>
+
+      <form [formGroup]="loginForm" (ngSubmit)="onSubmit()" class="space-y-6">
+        <div>
+          <label for="email" class="block text-sm font-medium text-slate-700">Correo Electrónico</label>
+          <input type="email" id="email" formControlName="email" class="mt-1 block w-full px-3 py-2 bg-white border border-slate-300 rounded-md shadow-sm focus:outline-none focus:ring-cyan-500 focus:border-cyan-500 sm:text-sm" placeholder="tu@email.com">
+          @if (loginForm.get('email')?.invalid && loginForm.get('email')?.touched) {
+            <p class="text-red-500 text-xs mt-1">
+                @if(loginForm.get('email')?.hasError('required')) {
+                    El correo es requerido.
+                } @else {
+                    El formato del correo no es válido.
+                }
+            </p>
+          }
+        </div>
+
+        <div>
+          <label for="password" class="block text-sm font-medium text-slate-700">Contraseña</label>
+          <input type="password" id="password" formControlName="password" class="mt-1 block w-full px-3 py-2 bg-white border border-slate-300 rounded-md shadow-sm focus:outline-none focus:ring-cyan-500 focus:border-cyan-500 sm:text-sm" placeholder="••••••••">
+          @if (loginForm.get('password')?.invalid && loginForm.get('password')?.touched) {
+            <p class="text-red-500 text-xs mt-1">La contraseña es requerida.</p>
+          }
+        </div>
+
+        @if (loginError()) {
+            <div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded-lg relative text-sm">
+                <span>{{ loginError() }}</span>
+            </div>
+        }
+        
+        <div>
+          <button type="submit" [disabled]="loginForm.invalid" class="w-full flex justify-center py-3 px-4 border border-transparent rounded-lg shadow-sm text-sm font-medium text-white bg-cyan-600 hover:bg-cyan-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-cyan-500 disabled:bg-slate-300 disabled:cursor-not-allowed transition-colors">
+            Iniciar Sesión
+          </button>
+        </div>
+      </form>
+    </div>
+    
+    <div class="mt-4 text-center text-sm text-slate-500 p-4 bg-slate-200 rounded-lg">
+        <p class="font-bold mb-2">Datos de Prueba:</p>
+        <p><strong>Admin:</strong> admin@dental.com / password123</p>
+        <p><strong>Paciente:</strong> sofia.v@example.com / password123</p>
+    </div>
+
+  </div>
+</div>

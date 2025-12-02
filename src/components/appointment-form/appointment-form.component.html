@@ -1,0 +1,69 @@
+<form [formGroup]="appointmentForm" (ngSubmit)="onSubmit()" class="space-y-6">
+  <h3 class="text-2xl font-bold text-slate-800 mb-4">Programar Nueva Cita</h3>
+  
+  <div class="bg-slate-50 border border-slate-200 p-3 rounded-lg text-center">
+      <p class="text-sm font-medium text-slate-600">Fecha de la cita</p>
+      <p class="text-lg font-semibold text-cyan-700">{{ formatDate(selectedDate()) }}</p>
+  </div>
+
+  @if (!patientId()) {
+    <div>
+      <label for="patient" class="block text-sm font-medium text-slate-700">Paciente</label>
+      <select id="patient" formControlName="patientId" class="mt-1 block w-full px-3 py-2 bg-white border border-slate-300 rounded-md shadow-sm focus:outline-none focus:ring-cyan-500 focus:border-cyan-500 sm:text-sm">
+        <option value="" disabled>Seleccione un paciente</option>
+        @for (patient of patients(); track patient.id) {
+          <option [value]="patient.id">{{ patient.name }}</option>
+        }
+      </select>
+      @if (appointmentForm.get('patientId')?.invalid && appointmentForm.get('patientId')?.touched) {
+        <p class="text-red-500 text-xs mt-1">Debe seleccionar un paciente.</p>
+      }
+    </div>
+  }
+
+  <div>
+    <label for="doctor" class="block text-sm font-medium text-slate-700">Doctor</label>
+    <select id="doctor" formControlName="doctorId" class="mt-1 block w-full px-3 py-2 bg-white border border-slate-300 rounded-md shadow-sm focus:outline-none focus:ring-cyan-500 focus:border-cyan-500 sm:text-sm">
+      <option value="" disabled>Seleccione un doctor</option>
+      @for (doctor of doctors(); track doctor.id) {
+        <option [value]="doctor.id">{{ doctor.name }} - {{ doctor.specialty }}</option>
+      }
+    </select>
+    @if (appointmentForm.get('doctorId')?.invalid && appointmentForm.get('doctorId')?.touched) {
+      <p class="text-red-500 text-xs mt-1">Debe seleccionar un doctor.</p>
+    }
+  </div>
+
+  <div class="grid grid-cols-2 gap-4">
+    <div>
+      <label for="startTime" class="block text-sm font-medium text-slate-700">Hora de Inicio</label>
+      <input type="time" id="startTime" formControlName="startTime" class="mt-1 block w-full px-3 py-2 bg-white border border-slate-300 rounded-md shadow-sm focus:outline-none focus:ring-cyan-500 focus:border-cyan-500 sm:text-sm">
+       @if (appointmentForm.get('startTime')?.invalid && appointmentForm.get('startTime')?.touched) {
+        <p class="text-red-500 text-xs mt-1">Inicio requerido.</p>
+      }
+    </div>
+    <div>
+      <label for="endTime" class="block text-sm font-medium text-slate-700">Hora de Fin</label>
+      <input type="time" id="endTime" formControlName="endTime" class="mt-1 block w-full px-3 py-2 bg-white border border-slate-300 rounded-md shadow-sm focus:outline-none focus:ring-cyan-500 focus:border-cyan-500 sm:text-sm">
+       @if (appointmentForm.get('endTime')?.invalid && appointmentForm.get('endTime')?.touched) {
+        <p class="text-red-500 text-xs mt-1">Fin requerido.</p>
+      }
+    </div>
+  </div>
+  @if (appointmentForm.hasError('timeRange') && (appointmentForm.get('startTime')?.touched || appointmentForm.get('endTime')?.touched)) {
+    <p class="text-red-500 text-xs -mt-4 text-center">La hora de fin debe ser posterior a la de inicio.</p>
+  }
+  
+  <div>
+    <label for="reason" class="block text-sm font-medium text-slate-700">Motivo de la Cita</label>
+    <textarea id="reason" formControlName="reason" rows="3" class="mt-1 block w-full px-3 py-2 bg-white border border-slate-300 rounded-md shadow-sm focus:outline-none focus:ring-cyan-500 focus:border-cyan-500 sm:text-sm" placeholder="Ej: Limpieza, Revisión..."></textarea>
+    @if (appointmentForm.get('reason')?.invalid && appointmentForm.get('reason')?.touched) {
+      <p class="text-red-500 text-xs mt-1">El motivo es requerido (mín. 3 caracteres).</p>
+    }
+  </div>
+  
+  <div class="flex justify-end space-x-3 pt-4">
+    <button type="button" (click)="closeModal.emit()" class="px-4 py-2 bg-slate-200 text-slate-800 rounded-md hover:bg-slate-300 transition-colors">Cancelar</button>
+    <button type="submit" [disabled]="appointmentForm.invalid" class="px-4 py-2 bg-cyan-500 text-white rounded-md hover:bg-cyan-600 transition-colors disabled:bg-slate-300 disabled:cursor-not-allowed">Guardar Cita</button>
+  </div>
+</form>

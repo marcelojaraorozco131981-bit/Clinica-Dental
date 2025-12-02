@@ -1,0 +1,43 @@
+
+<div class="flex flex-col h-full">
+  <!-- Header with month navigation -->
+  <div class="flex items-center justify-between mb-4">
+    <button (click)="changeMonth(-1)" class="p-2 rounded-full hover:bg-slate-100 transition-colors">
+      <svg class="w-6 h-6 text-slate-500" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+        <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 19.5 8.25 12l7.5-7.5" />
+      </svg>
+    </button>
+    <h2 class="text-xl font-bold text-slate-700 capitalize">{{ monthName() }} {{ year() }}</h2>
+    <button (click)="changeMonth(1)" class="p-2 rounded-full hover:bg-slate-100 transition-colors">
+      <svg class="w-6 h-6 text-slate-500" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+        <path stroke-linecap="round" stroke-linejoin="round" d="m8.25 4.5 7.5 7.5-7.5 7.5" />
+      </svg>
+    </button>
+  </div>
+
+  <!-- Calendar Grid -->
+  <div class="grid grid-cols-7 gap-1 flex-grow">
+    <!-- Day headers -->
+    @for (day of weekDays; track day) {
+      <div class="text-center font-semibold text-sm text-slate-500 py-2">{{ day }}</div>
+    }
+
+    <!-- Blank days at the start of the month -->
+    @for (blank of [].constructor(firstDayOfMonth()); track $index) {
+      <div></div>
+    }
+
+    <!-- Calendar days -->
+    @for (day of calendarDays(); track day.day) {
+      <div 
+        class="flex flex-col items-center justify-center p-2 rounded-lg cursor-pointer transition-colors duration-200 border-2"
+        [class]="getDayClasses(day)"
+        (click)="selectDate(day.day)">
+        <span class="text-sm">{{ day.day }}</span>
+        @if (day.hasAppointment) {
+          <div class="w-2 h-2 bg-cyan-500 rounded-full mt-1"></div>
+        }
+      </div>
+    }
+  </div>
+</div>
